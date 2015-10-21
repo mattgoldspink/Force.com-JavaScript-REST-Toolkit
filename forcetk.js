@@ -58,7 +58,7 @@ if (forcetk.Client === undefined) {
         'use strict';
         this.clientId = clientId;
         this.loginUrl = loginUrl || 'https://login.salesforce.com/';
-        if (typeof proxyUrl === 'undefined' || proxyUrl === null) {
+        if (proxyUrl === undefined || proxyUrl === null) {
             if (location.protocol === 'file:' || location.protocol === 'ms-appx:') {
                 // In PhoneGap
                 this.proxyUrl = null;
@@ -74,7 +74,7 @@ if (forcetk.Client === undefined) {
                 } else {
                     this.proxyUrl += "/services/proxy";
                 }
-           }
+            }
             this.authzHeader = "Authorization"; // Vlocity Card Team: this is for VF
         } else {
             // On a server outside VF
@@ -147,7 +147,7 @@ if (forcetk.Client === undefined) {
                 instance = null;
             if (elements.length === 4 && elements[1] === 'my') {
                 instance = elements[0] + '.' + elements[1];
-            } else if (elements.length === 3){
+            } else if (elements.length === 3) {
                 instance = elements[0];
             } else {
                 instance = elements[1];
@@ -183,7 +183,7 @@ if (forcetk.Client === undefined) {
             success: callback,
             error: (!this.refreshToken || retry) ? error : function (jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status === 401) {
-                    that.refreshAccessToken(function(oauthResponse) {
+                    that.refreshAccessToken(function (oauthResponse) {
                         that.setSessionToken(oauthResponse.access_token, null,
                             oauthResponse.instance_url);
                         that.ajax(path, callback, error, method, payload, true);
@@ -221,8 +221,8 @@ if (forcetk.Client === undefined) {
         var that = this,
             url = (this.visualforce ? '' : this.instanceUrl) + path,
             request = new XMLHttpRequest();
-                  
-        request.open("GET",  (this.proxyUrl !== null && !this.visualforce) ? this.proxyUrl : url, true);
+
+        request.open("GET", (this.proxyUrl !== null && !this.visualforce) ? this.proxyUrl : url, true);
         request.responseType = "arraybuffer";
 
         request.setRequestHeader(this.authzHeader, "Bearer " + this.sessionId);
@@ -245,7 +245,7 @@ if (forcetk.Client === undefined) {
                     }
                 } else if (request.status === 401 && !retry) {
                     //refresh token in 401
-                    that.refreshAccessToken(function(oauthResponse) {
+                    that.refreshAccessToken(function (oauthResponse) {
                         that.setSessionToken(oauthResponse.access_token, null, oauthResponse.instance_url);
                         that.getChatterFile(path, mimeType, callback, error, true);
                     }, error);
@@ -254,7 +254,7 @@ if (forcetk.Client === undefined) {
                     error(request, request.statusText, request.response);
                 }
             }
-        }
+        };
 
         request.send();
 
@@ -265,7 +265,7 @@ if (forcetk.Client === undefined) {
         'use strict';
         var str = '',
             i;
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i += 1) {
             str += (Math.random().toString(16) + "000000000").substr(2, 8);
         }
         return str;
@@ -289,21 +289,21 @@ if (forcetk.Client === undefined) {
             url = (this.visualforce ? '' : this.instanceUrl) + '/services/data' + path,
             boundary = randomString(),
             blob = new Blob([
-                "--boundary_" + boundary + '\n' 
-                + "Content-Disposition: form-data; name=\"entity_content\";" + "\n" 
-                + "Content-Type: application/json" + "\n\n" 
-                + JSON.stringify(fields) 
-                + "\n\n" 
-                + "--boundary_" + boundary + "\n" 
-                + "Content-Type: application/octet-stream" + "\n" 
-                + "Content-Disposition: form-data; name=\"" + payloadField 
-                  + "\"; filename=\"" + filename + "\"\n\n",
+                "--boundary_" + boundary + '\n'
+                    + "Content-Disposition: form-data; name=\"entity_content\";" + "\n"
+                    + "Content-Type: application/json" + "\n\n"
+                    + JSON.stringify(fields)
+                    + "\n\n"
+                    + "--boundary_" + boundary + "\n"
+                    + "Content-Type: application/octet-stream" + "\n"
+                    + "Content-Disposition: form-data; name=\"" + payloadField
+                    + "\"; filename=\"" + filename + "\"\n\n",
                 payload,
-                "\n\n" 
-                + "--boundary_" + boundary + "--"
+                "\n\n"
+                    + "--boundary_" + boundary + "--"
             ], {type : 'multipart/form-data; boundary=\"boundary_' + boundary + '\"'}),
             request = new XMLHttpRequest();
-            
+
         request.open("POST", (this.proxyUrl !== null && !this.visualforce) ? this.proxyUrl : url, this.asyncAjax);
 
         request.setRequestHeader('Accept', 'application/json');
@@ -322,17 +322,17 @@ if (forcetk.Client === undefined) {
                     if (request.status >= 200 && request.status < 300) {
                         // retrieve the response
                         callback(request.response ? JSON.parse(request.response) : null);
-                    } else if (request.status == 401 && !retry) {
+                    } else if (request.status === 401 && !retry) {
                         that.refreshAccessToken(function (oauthResponse) {
                             that.setSessionToken(oauthResponse.access_token, null, oauthResponse.instance_url);
-                            that.blob(path, fields, fileName, file, callback, error, true);
+                            that.blob(path, fields, fileName, payloadField, payload, callback, error, true);
                         }, error);
                     } else {
                         // return status message
                         error(request, request.statusText, request.response);
                     }
                 }
-            }
+            };
         }
 
         request.send(blob);
@@ -429,7 +429,7 @@ if (forcetk.Client === undefined) {
                     paramMap = {};
                 }
                 for (paramName in paramMap) {
-                    if (paramMap.hasOWnProperty(paramName)) {
+                    if (paramMap.hasOwnProperty(paramName)) {
                         xhr.setRequestHeader(paramName, paramMap[paramName]);
                     }
                 }
@@ -610,11 +610,11 @@ if (forcetk.Client === undefined) {
         //-- ajax call adds on services/data to the url call, so only send the url after
         var serviceData = "services/data",
             index = url.indexOf(serviceData);
-        
-        if( index > -1) {
+
+        if (index > -1) {
             url = url.substr(index + serviceData.length);
         }
-        
+
         return this.ajax(url, callback, error);
     };
 

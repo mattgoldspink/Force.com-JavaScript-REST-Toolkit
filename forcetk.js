@@ -54,7 +54,7 @@ if (forcetk.Client === undefined) {
      * @param [communityInd=null] Indicator if forcetk is used from Community
      * @constructor
      */
-    forcetk.Client = function(clientId, loginUrl, proxyUrl, communityInd) {
+    forcetk.Client = function (clientId, loginUrl, proxyUrl, communityInd) {
         'use strict';
         this.clientId = clientId;
         this.loginUrl = loginUrl || 'https://login.salesforce.com/';
@@ -87,23 +87,23 @@ if (forcetk.Client === undefined) {
         this.visualforce = false;
         this.instanceUrl = null;
         this.asyncAjax = true;
-    }
+    };
 
     /**
      * Set a refresh token in the client.
      * @param refreshToken an OAuth refresh token
      */
-    forcetk.Client.prototype.setRefreshToken = function(refreshToken) {
+    forcetk.Client.prototype.setRefreshToken = function (refreshToken) {
         'use strict';
         this.refreshToken = refreshToken;
-    }
+    };
 
     /**
      * Refresh the access token.
      * @param callback function to call on success
      * @param error function to call on failure
      */
-    forcetk.Client.prototype.refreshAccessToken = function(callback, error) {
+    forcetk.Client.prototype.refreshAccessToken = function (callback, error) {
         'use strict';
         var that = this;
         var url = this.loginUrl + '/services/oauth2/token';
@@ -122,7 +122,7 @@ if (forcetk.Client === undefined) {
                 }
             }
         });
-    }
+    };
 
     /**
      * Set a session token and the associated metadata in the client.
@@ -132,7 +132,7 @@ if (forcetk.Client === undefined) {
      * @param [instanceUrl] Omit this if running on Visualforce; otherwise 
      *                   use the value from the OAuth token.
      */
-    forcetk.Client.prototype.setSessionToken = function(sessionId, apiVersion, instanceUrl) {
+    forcetk.Client.prototype.setSessionToken = function (sessionId, apiVersion, instanceUrl) {
         'use strict';
         this.sessionId = sessionId;
         this.apiVersion = (typeof apiVersion === 'undefined' || apiVersion === null)
@@ -158,7 +158,7 @@ if (forcetk.Client === undefined) {
         } else {
             this.instanceUrl = instanceUrl;
         }
-    }
+    };
 
     /*
      * Low level utility function to call the Salesforce endpoint.
@@ -168,7 +168,7 @@ if (forcetk.Client === undefined) {
      * @param [method="GET"] HTTP method for call
      * @param [payload=null] payload for POST/PATCH etc
      */
-    forcetk.Client.prototype.ajax = function(path, callback, error, method, payload, retry) {
+    forcetk.Client.prototype.ajax = function (path, callback, error, method, payload, retry) {
         'use strict';
         var that = this;
         var url = (this.visualforce ? '' : this.instanceUrl) + '/services/data' + path;
@@ -203,7 +203,7 @@ if (forcetk.Client === undefined) {
                 xhr.setRequestHeader('X-User-Agent', 'salesforce-toolkit-rest-javascript/' + that.apiVersion);
             }
         });
-    }
+    };
 
     /**
      * Utility function to query the Chatter API and download a file
@@ -217,7 +217,7 @@ if (forcetk.Client === undefined) {
      * @param [error=null] function to which request will be passed in case of error
      * @param retry true if we've already tried refresh token flow once
      */
-    forcetk.Client.prototype.getChatterFile = function(path, mimeType, callback, error, retry) {
+    forcetk.Client.prototype.getChatterFile = function (path, mimeType, callback, error, retry) {
         'use strict';
         var that = this;
         var url = (this.visualforce ? '' : this.instanceUrl) + path;
@@ -265,10 +265,11 @@ if (forcetk.Client === undefined) {
 
         request.send();
         
-    }
+    };
     
     // Local utility to create a random string for multipart boundary
-    function randomString() {
+    var randomString = function () {
+        'use strict';
         var str = '';
         for (var i = 0; i < 4; i++) {
             str += (Math.random().toString(16)+"000000000").substr(2,8);
@@ -288,7 +289,7 @@ if (forcetk.Client === undefined) {
      * @param [error=null] function to which response will be passed in case of error
      * @param retry true if we've already tried refresh token flow once
      */
-    forcetk.Client.prototype.blob = function(path, fields, filename, payloadField, payload, callback, error, retry) { 
+    forcetk.Client.prototype.blob = function (path, fields, filename, payloadField, payload, callback, error, retry) { 
         'use strict';
         var that = this;
         var url = (this.visualforce ? '' : this.instanceUrl) + '/services/data' + path;
@@ -344,7 +345,7 @@ if (forcetk.Client === undefined) {
         request.send(blob);
         
         return this.asyncAjax ? null : JSON.parse(request.response);
-    }
+    };
     
     /*
      * Create a record with blob data
@@ -359,13 +360,13 @@ if (forcetk.Client === undefined) {
      * @param [error=null] function to which response will be passed in case of error
      * @param retry true if we've already tried refresh token flow once
      */
-    forcetk.Client.prototype.createBlob = function(objtype, fields, filename, 
+    forcetk.Client.prototype.createBlob = function (objtype, fields, filename, 
                                                    payloadField, payload, callback, 
                                                    error, retry) { 
         'use strict';
         return this.blob('/' + this.apiVersion + '/sobjects/' + objtype + '/', 
                          fields, filename, payloadField, payload, callback, error);
-    }
+    };
 
     /*
      * Update a record with blob data
@@ -381,13 +382,13 @@ if (forcetk.Client === undefined) {
      * @param [error=null] function to which response will be passed in case of error
      * @param retry true if we've already tried refresh token flow once
      */
-    forcetk.Client.prototype.updateBlob = function(objtype, id, fields, filename, 
+    forcetk.Client.prototype.updateBlob = function (objtype, id, fields, filename, 
                                                    payloadField, payload, callback, 
                                                    error, retry) { 
         'use strict';
         return this.blob('/' + this.apiVersion + '/sobjects/' + objtype + '/' + id + 
                          '?_HttpMethod=PATCH', fields, filename, payloadField, payload, callback, error);
-    }
+    };
 
     /*
      * Low level utility function to call the Salesforce endpoint specific for Apex REST API.
@@ -399,7 +400,7 @@ if (forcetk.Client === undefined) {
      * @param [paramMap={}] parameters to send as header values for POST/PATCH etc
      * @param [retry] specifies whether to retry on error
      */
-    forcetk.Client.prototype.apexrest = function(path, callback, error, method, payload, paramMap, retry) {
+    forcetk.Client.prototype.apexrest = function (path, callback, error, method, payload, paramMap, retry) {
         'use strict';
         var that = this;
         var url = this.instanceUrl + '/services/apexrest' + path;
@@ -441,7 +442,7 @@ if (forcetk.Client === undefined) {
                 xhr.setRequestHeader('X-User-Agent', 'salesforce-toolkit-rest-javascript/' + that.apiVersion);
             }
         });
-    }
+    };
 
     /*
      * Lists summary information about each Salesforce.com version currently 
@@ -450,10 +451,10 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.versions = function(callback, error) {
+    forcetk.Client.prototype.versions = function (callback, error) {
         'use strict';
         return this.ajax('/', callback, error);
-    }
+    };
 
     /*
      * Lists available resources for the client's API version, including 
@@ -461,10 +462,10 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.resources = function(callback, error) {
+    forcetk.Client.prototype.resources = function (callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/', callback, error);
-    }
+    };
 
     /*
      * Lists the available objects and their metadata for your organization's 
@@ -472,10 +473,10 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.describeGlobal = function(callback, error) {
+    forcetk.Client.prototype.describeGlobal = function (callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/', callback, error);
-    }
+    };
 
     /*
      * Describes the individual metadata for the specified object.
@@ -483,11 +484,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.metadata = function(objtype, callback, error) {
+    forcetk.Client.prototype.metadata = function (objtype, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype + '/'
         , callback, error);
-    }
+    };
 
     /*
      * Completely describes the individual metadata at all levels for the 
@@ -496,11 +497,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.describe = function(objtype, callback, error) {
+    forcetk.Client.prototype.describe = function (objtype, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype
         + '/describe/', callback, error);
-    }
+    };
 
     /*
      * Creates a new record of the given type.
@@ -511,11 +512,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.create = function(objtype, fields, callback, error) {
+    forcetk.Client.prototype.create = function (objtype, fields, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype + '/'
         , callback, error, "POST", JSON.stringify(fields));
-    }
+    };
 
     /*
      * Retrieves field values for a record of the given type.
@@ -526,7 +527,7 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.retrieve = function(objtype, id, fieldlist, callback, error) {
+    forcetk.Client.prototype.retrieve = function (objtype, id, fieldlist, callback, error) {
         'use strict';
         if (arguments.length == 4) {
             error = callback;
@@ -536,7 +537,7 @@ if (forcetk.Client === undefined) {
         var fields = fieldlist ? '?fields=' + fieldlist : '';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype + '/' + id
         + fields, callback, error);
-    }
+    };
 
     /*
      * Upsert - creates or updates record of the given type, based on the 
@@ -550,11 +551,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.upsert = function(objtype, externalIdField, externalId, fields, callback, error) {
+    forcetk.Client.prototype.upsert = function (objtype, externalIdField, externalId, fields, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype + '/' + externalIdField + '/' + externalId 
         + '?_HttpMethod=PATCH', callback, error, "POST", JSON.stringify(fields));
-    }
+    };
 
     /*
      * Updates field values on a record of the given type.
@@ -566,11 +567,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.update = function(objtype, id, fields, callback, error) {
+    forcetk.Client.prototype.update = function (objtype, id, fields, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype + '/' + id 
         + '?_HttpMethod=PATCH', callback, error, "POST", JSON.stringify(fields));
-    }
+    };
 
     /*
      * Deletes a record of the given type. Unfortunately, 'delete' is a 
@@ -580,11 +581,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.del = function(objtype, id, callback, error) {
+    forcetk.Client.prototype.del = function (objtype, id, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/sobjects/' + objtype + '/' + id
         , callback, error, "DELETE");
-    }
+    };
 
     /*
      * Executes the specified SOQL query.
@@ -593,11 +594,11 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.query = function(soql, callback, error) {
+    forcetk.Client.prototype.query = function (soql, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/query?q=' + encodeURIComponent(soql)
         , callback, error);
-    }
+    };
     
     /*
      * Queries the next set of records based on pagination.
@@ -609,7 +610,7 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.queryMore = function( url, callback, error ){
+    forcetk.Client.prototype.queryMore = function ( url, callback, error ){
         'use strict';
         //-- ajax call adds on services/data to the url call, so only send the url after
         var serviceData = "services/data";
@@ -622,7 +623,7 @@ if (forcetk.Client === undefined) {
         }
         
         return this.ajax( url, callback, error );
-    }
+    };
 
     /*
      * Executes the specified SOSL search.
@@ -631,9 +632,9 @@ if (forcetk.Client === undefined) {
      * @param callback function to which response will be passed
      * @param [error=null] function to which jqXHR will be passed in case of error
      */
-    forcetk.Client.prototype.search = function(sosl, callback, error) {
+    forcetk.Client.prototype.search = function (sosl, callback, error) {
         'use strict';
         return this.ajax('/' + this.apiVersion + '/search?q=' + encodeURIComponent(sosl)
         , callback, error);
-    }
+    };
 }

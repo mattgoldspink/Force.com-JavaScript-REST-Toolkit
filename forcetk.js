@@ -64,22 +64,14 @@ if (forcetk.Client === undefined) {
                 this.proxyUrl = null;
             } else {
                 // In Visualforce - still need proxyUrl for Apex REST methods
-                this.proxyUrl = location.protocol + "//" + location.hostname;
-
-                // Vlocity Card Team added pathname to handle community path because in the scenario of community,
-                // forcetk proxy is set to community url, and if the url has path, the proxy url has to contain that.
-                // Otherwise, you will get a 503 error
-                if (typeof communityInd !== 'undefined' && communityInd !== null && communityInd) {
-                    this.proxyUrl += location.pathname + "services/proxy";
-                } else {
-                    this.proxyUrl += "/services/proxy";
-                }
+                this.proxyUrl = location.protocol + "//" + location.hostname
+                    + (communityInd ? location.pathname : "") + "services/proxy";
             }
-            this.authzHeader = "Authorization"; // Vlocity Card Team: this is for VF
+            this.authzHeader = "Authorization";
         } else {
             // On a server outside VF
             this.proxyUrl = proxyUrl;
-            this.authzHeader = "X-Authorization"; // Vlocity Card Team: if you ever use this for VF, you will get a 401 unauthorized - INVALID SESSION error
+            this.authzHeader = "X-Authorization";
         }
         this.refreshToken = null;
         this.sessionId = null;

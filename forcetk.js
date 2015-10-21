@@ -325,7 +325,7 @@ if (forcetk.Client === undefined) {
                     } else if (request.status === 401 && !retry) {
                         that.refreshAccessToken(function (oauthResponse) {
                             that.setSessionToken(oauthResponse.access_token, null, oauthResponse.instance_url);
-                            that.blob(path, fields, fileName, payloadField, payload, callback, error, true);
+                            that.blob(path, fields, filename, payloadField, payload, callback, error, true);
                         }, error);
                     } else {
                         // return status message

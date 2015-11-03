@@ -65,7 +65,8 @@ if (forcetk.Client === undefined) {
             } else {
                 // In Visualforce - still need proxyUrl for Apex REST methods
                 this.proxyUrl = location.protocol + "//" + location.hostname
-                    + (communityInd === true ? location.pathname.replace(/\/$/, "") : "") + "/services/proxy";
+                    + (communityInd === true ? location.pathname.replace(/apex\/\w+/, "").replace(/\/$/, "") : "") 
+                    + "/services/proxy";
             }
             this.authzHeader = "Authorization";
         } else {
